@@ -47,9 +47,8 @@ const optionsIziToastLoadMore = {
 const lightBox = new SimpleLightbox('.gallery a', optionsLightBox);
 
 const perPage = 15;
-const i = 2;
-let amountPage = 1;
-let searchQuery = '';
+let currentQuery;
+let currentPage;
 
 searchForm.addEventListener('submit', onSubmitBtn);
 loadBtn.addEventListener('click', onClickLoadBtn);
@@ -58,7 +57,6 @@ hideLoadBtn();
 
 async function onSubmitBtn(e) {
   e.preventDefault();
-
   // очищаємо контейнер перед новим запитом
   resetPage();
   // отримуємо значення з інпут
@@ -68,14 +66,15 @@ async function onSubmitBtn(e) {
     // addLoader();
     try {
       // отримуємо об'єкт з картинками
-      const images = await fetchImages(searchQuery, amountPage, perPage);
+      const images = await fetchImages(searchQuery, 1, perPage);
+      console.log(images);
 
       if (images.total === 0) {
         resetForm();
         hideLoadBtn();
         // deleteLoader();
         return iziToast.error(optionsIziToastSearch);
-      } else if (images.totalHits < perPage) {
+      } else if (images.totalHits <= perPage) {
         addCardMarkup(images.hits);
         hideLoadBtn();
         // deleteLoader();
@@ -84,8 +83,8 @@ async function onSubmitBtn(e) {
         addCardMarkup(images.hits);
         visibleLoadBtn();
         // deleteLoader();
-
-        return searchQuery;
+        currentQuery = searchQuery;
+        currentPage = 1;
       }
     } catch (error) {
       hideLoadBtn();
@@ -100,11 +99,12 @@ async function onClickLoadBtn() {
   addLoader();
   hideLoadBtn();
   try {
-    amountPage += 1;
-    const images = await fetchImages(searchQuery, amountPage, perPage);
+    currentPage += 1;
+    const images = await fetchImages(currentQuery, currentPage, perPage);
     const totalPage = Math.ceil(images.totalHits / perPage);
 
-    if (amountPage > totalPage) {
+    if (currentPage === totalPage) {
+      deleteLoader();
       return iziToast.error(optionsIziToastLoadMore);
     }
     addCardMarkup(images.hits);
@@ -113,8 +113,11 @@ async function onClickLoadBtn() {
     const cardElement = document.querySelector('.gallery-image');
     // отримуємо за допомогою метода об'єкт з властивостями елемента та вибираємо висоту
     const heightCard = cardElement.getBoundingClientRect().height;
-    const heightScroll = i * heightCard;
-    window.scrollBy(0, heightScroll);
+    const heightScroll = 2 * heightCard;
+    window.scrollBy({
+      top: heightScroll,
+      behavior: 'smooth',
+    });
     deleteLoader();
     visibleLoadBtn();
   } catch (error) {
