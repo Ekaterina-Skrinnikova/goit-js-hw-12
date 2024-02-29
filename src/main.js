@@ -98,6 +98,7 @@ async function onSubmitBtn(e) {
 
 async function onClickLoadBtn() {
   addLoader();
+  hideLoadBtn();
   try {
     amountPage += 1;
     const images = await fetchImages(searchQuery, amountPage, perPage);
@@ -114,6 +115,8 @@ async function onClickLoadBtn() {
     const heightCard = cardElement.getBoundingClientRect().height;
     const heightScroll = i * heightCard;
     window.scrollBy(0, heightScroll);
+    deleteLoader();
+    visibleLoadBtn();
   } catch (error) {
     deleteLoader();
     iziToast.error(optionsIziToastLoadMore);
