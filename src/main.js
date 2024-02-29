@@ -48,6 +48,7 @@ const lightBox = new SimpleLightbox('.gallery a', optionsLightBox);
 
 const perPage = 15;
 const i = 2;
+
 let amountPage = 1;
 let searchQuery = '';
 
