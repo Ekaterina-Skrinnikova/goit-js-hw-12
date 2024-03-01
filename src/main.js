@@ -57,6 +57,7 @@ hideLoadBtn();
 
 async function onSubmitBtn(e) {
   e.preventDefault();
+  addLoader();
   // очищаємо контейнер перед новим запитом
   resetPage();
   // отримуємо значення з інпут
@@ -72,27 +73,28 @@ async function onSubmitBtn(e) {
       if (images.total === 0) {
         resetForm();
         hideLoadBtn();
-        // deleteLoader();
+        deleteLoader();
         return iziToast.error(optionsIziToastSearch);
       } else if (images.totalHits <= perPage) {
         addCardMarkup(images.hits);
         hideLoadBtn();
-        // deleteLoader();
+        deleteLoader();
       } else {
         // рендеремо картки
         addCardMarkup(images.hits);
         visibleLoadBtn();
-        // deleteLoader();
+        deleteLoader();
         currentQuery = searchQuery;
         currentPage = 1;
       }
     } catch (error) {
       hideLoadBtn();
-      // deleteLoader();
+      deleteLoader();
       iziToast.error(optionsIziToastSearch);
     }
   }
   resetForm();
+  deleteLoader();
 }
 
 async function onClickLoadBtn() {
